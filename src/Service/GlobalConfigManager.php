@@ -24,4 +24,13 @@ class GlobalConfigManager extends AbstractController{
         return bin2hex(openssl_random_pseudo_bytes(16));
     }
 
+    public function customResponse($result, $error = null){
+        return $this->json(
+            array(
+                "result" => $result,
+                "error"  => $error
+            )
+            );
+    }
+
 }

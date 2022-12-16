@@ -4,32 +4,21 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Service\GlobalConfigManager;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 
-class UserController extends AbstractController
+class UserController extends GlobalConfigManager
 {
-    private $globalConfigManager;
-
-    public function __construct(GlobalConfigManager $globalConfigManager)
-    {
-        $this->globalConfigManager = $globalConfigManager;
-    }
 
     #[Route('/login', name: 'login')]
     public function login(): JsonResponse
     {
         $user = $this->getUser();
-        $token = $this->globalConfigManager->generateToken();
-
+        $token = $this->generateToken();
         $user->setApiToken($token);
-        $this->globalConfigManager->repository("User")->save($user, true);
-        return $this->json([
-            'result' => $token
-        ]);
+        $this->repository("User")->save($user, true);
+        return $this->customResponse($token);
     }
 
     // #[Route('/user/create', name: 'user_create')]
@@ -42,7 +31,7 @@ class UserController extends AbstractController
     //         "lucas"
     //     ));
 
-    //     $this->globalConfigManager->repository("User")->save($user, true);
+    //     $this->repository("User")->save($user, true);
     //     return $this->json([
     //         'message' => 'Welcome to your new controller!',
     //         'path' => 'src/Controller/UserController.php',
