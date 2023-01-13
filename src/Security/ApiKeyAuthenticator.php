@@ -22,6 +22,7 @@ class ApiKeyAuthenticator extends AbstractAuthenticator
     const HEADER_API_KEY  = "apiKey";
     const HEADER_USER     = "user";
     const HEADER_PASSWORD = "password";
+    const REQUEST_LOGIN   = "login";
 
     private $globalConfigManager;
 
@@ -37,20 +38,24 @@ class ApiKeyAuthenticator extends AbstractAuthenticator
     {
         $apiToken = $request->headers->get(self::HEADER_API_KEY);
         if (null === $apiToken){
-            $user = $request->headers->has(self::HEADER_USER);
-            $psw  = $request->headers->has(self::HEADER_PASSWORD);
-            if($user && $psw){
-                $user = $request->headers->get(self::HEADER_USER);
-                $psw  = $request->headers->get(self::HEADER_PASSWORD);
-                $passport = new Passport(
-                    new UserBadge($user, function ($userIdentifier){
-                    return $this->globalConfigManager->repository("User")->findOneBy(array("email" => $userIdentifier));
-                    }),
-                    new PasswordCredentials($psw)
-                );
-                return $passport;
+            if(strpos($request->getRequestUri(), self::REQUEST_LOGIN)){
+                $user = $request->headers->has(self::HEADER_USER);
+                $psw  = $request->headers->has(self::HEADER_PASSWORD);
+                if($user && $psw){
+                    $user = $request->headers->get(self::HEADER_USER);
+                    $psw  = $request->headers->get(self::HEADER_PASSWORD);
+                    $passport = new Passport(
+                        new UserBadge($user, function ($userIdentifier){
+                        return $this->globalConfigManager->repository("User")->findOneBy(array("email" => $userIdentifier));
+                        }),
+                        new PasswordCredentials($psw)
+                    );
+                    return $passport;
+                }
+                throw new CustomUserMessageAuthenticationException('No user or password provided');
+            }else{
+                throw new CustomUserMessageAuthenticationException('No API token provided');
             }
-            throw new CustomUserMessageAuthenticationException('No API token provided');
         }
         $userByApiToken = $this->globalConfigManager->repository("User")->findOneBy(array("apiToken" => $apiToken));
         if(null === $userByApiToken){

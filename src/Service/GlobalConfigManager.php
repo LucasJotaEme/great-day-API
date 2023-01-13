@@ -2,9 +2,10 @@
 
 namespace App\Service;
 
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 class GlobalConfigManager extends AbstractController{
 
@@ -30,7 +31,15 @@ class GlobalConfigManager extends AbstractController{
                 "result" => $result,
                 "error"  => $error
             )
-            );
+        );
     }
+
+    // public function convertAnyObjectToArray($object){
+    //     $normalizer = [new ObjectNormalizer()];
+    //     $serializer = new Serializer([$normalizer]);
+
+    //     $normalizedUser = $serializer->normalize($object);
+    //     dd($normalizedUser);
+    // }
 
 }
