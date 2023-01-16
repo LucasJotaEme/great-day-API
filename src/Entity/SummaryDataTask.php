@@ -19,6 +19,12 @@ class SummaryDataTask
     #[ORM\Column(length: 255)]
     private ?string $state = null;
 
+    #[ORM\ManyToOne(inversedBy: 'summaryDataTasks')]
+    private ?TaskType $taskType = null;
+
+    #[ORM\ManyToOne(inversedBy: 'summaryDataTasks')]
+    private ?Summary $summary = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -44,6 +50,30 @@ class SummaryDataTask
     public function setState(string $state): self
     {
         $this->state = $state;
+
+        return $this;
+    }
+
+    public function getTaskType(): ?TaskType
+    {
+        return $this->taskType;
+    }
+
+    public function setTaskType(?TaskType $taskType): self
+    {
+        $this->taskType = $taskType;
+
+        return $this;
+    }
+
+    public function getSummary(): ?Summary
+    {
+        return $this->summary;
+    }
+
+    public function setSummary(?Summary $summary): self
+    {
+        $this->summary = $summary;
 
         return $this;
     }

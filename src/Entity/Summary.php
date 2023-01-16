@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\SummaryRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -22,6 +24,17 @@ class Summary
 
     #[ORM\Column(nullable: true)]
     private ?float $totalWorkingHours = null;
+
+    #[ORM\ManyToOne(inversedBy: 'summaries')]
+    private ?User $user = null;
+
+    #[ORM\OneToMany(mappedBy: 'summary', targetEntity: SummaryDataTask::class)]
+    private Collection $summaryDataTasks;
+
+    public function __construct()
+    {
+        $this->summaryDataTasks = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -60,6 +73,48 @@ class Summary
     public function setTotalWorkingHours(?float $totalWorkingHours): self
     {
         $this->totalWorkingHours = $totalWorkingHours;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, SummaryDataTask>
+     */
+    public function getSummaryDataTasks(): Collection
+    {
+        return $this->summaryDataTasks;
+    }
+
+    public function addSummaryDataTask(SummaryDataTask $summaryDataTask): self
+    {
+        if (!$this->summaryDataTasks->contains($summaryDataTask)) {
+            $this->summaryDataTasks->add($summaryDataTask);
+            $summaryDataTask->setSummary($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSummaryDataTask(SummaryDataTask $summaryDataTask): self
+    {
+        if ($this->summaryDataTasks->removeElement($summaryDataTask)) {
+            // set the owning side to null (unless already changed)
+            if ($summaryDataTask->getSummary() === $this) {
+                $summaryDataTask->setSummary(null);
+            }
+        }
 
         return $this;
     }

@@ -19,7 +19,7 @@ class UserController extends GlobalConfigManager
     {
         $user = $this->getUser();
         $token = $this->generateToken();
-
+        
         $user->setApiToken($token);
         $this->repository($userHandler::USER_ENTITY_NAME)->save($user, true);
         return $this->customResponse($token);

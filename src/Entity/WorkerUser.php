@@ -22,6 +22,9 @@ class WorkerUser
     #[ORM\Column(nullable: true)]
     private ?float $totalWorkingHours = null;
 
+    #[ORM\OneToOne(inversedBy: 'workerUser', cascade: ['persist', 'remove'])]
+    private ?User $user = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -59,6 +62,18 @@ class WorkerUser
     public function setTotalWorkingHours(?float $totalWorkingHours): self
     {
         $this->totalWorkingHours = $totalWorkingHours;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }
