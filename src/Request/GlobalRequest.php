@@ -6,12 +6,10 @@ use App\Service\GlobalConfigManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class GlobalRequest{
 
     public function __construct(protected ValidatorInterface $validator, public GlobalConfigManager $globalConfigManager){
-        dd($request->server->get('SERVER_NAME'));
         $this->populate();
 
         if ($this->autoValidateRequest()) {
@@ -20,18 +18,18 @@ class GlobalRequest{
     }
 
     public function validate(){
-        $errors =  $this->validator->validate($this);
-        $messages = ['message' => 'validation_failed', 'errors' => []];
+        $errors   =  $this->validator->validate($this);
+        $response = ['result' => null, 'error' => []];
         /** @var \Symfony\Component\Validator\ConstraintViolation  */
         foreach ($errors as $message) {
-            $messages['errors'][] = [
+            $response['error'][] = [
                 'property' => $message->getPropertyPath(),
                 'value' => $message->getInvalidValue(),
                 'message' => $message->getMessage(),
             ];
         }
-        if (count($messages['errors']) > 0) {
-            $response = new JsonResponse($messages, 201);
+        if (count($response['error']) > 0) {
+            $response = new JsonResponse($response, 201);
             $response->send();
 
             exit;
@@ -39,12 +37,12 @@ class GlobalRequest{
     }
 
     public static function getRequest(){
-        return Request::createFromGlobals();
+        return Request::createFromGlobals()->toArray();
     }
 
     protected function populate(){
         try{
-            $requestAsArray = $this->getRequest()->toArray();
+            $requestAsArray = $this->getRequest();
             foreach($requestAsArray as $property => $value){
                 if(property_exists($this, $property)){
                     $this->{$property} = $value;
@@ -56,6 +54,6 @@ class GlobalRequest{
     }
 
     protected function autoValidateRequest(): bool{
-        return false;
+        return true;
     }
 }

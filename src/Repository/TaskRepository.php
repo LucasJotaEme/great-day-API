@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Task;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Validator\Constraints\Length;
 
 /**
  * @extends ServiceEntityRepository<Task>
@@ -16,6 +17,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class TaskRepository extends ServiceEntityRepository
 {
+    CONST ENTITY_ROUTE        = "App\Entity\Task";
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Task::class);
@@ -37,6 +40,33 @@ class TaskRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function findByParamsWithQuery($params): Array
+    {
+        $entityRoute         = self::ENTITY_ROUTE;
+        $entityManager       = $this->getEntityManager();
+        $queryParams         = array();
+        $queries             = array();
+        
+        if(isset($params["name"])){
+            $queries[] = "(task.name LIKE '{$params['name']}%') ";
+        }
+        if(isset($params["taskTypeId"])){
+            $queries[] = "(task.taskType = :taskTypeId)";
+            $queryParams["taskTypeId"] = $params["taskTypeId"];
+        }
+        return $entityManager
+        ->createQuery($this->buildQueryWithSubQueries("SELECT task FROM $entityRoute task",$queries))
+        ->setParameters($queryParams)
+        ->getResult();
+    }
+
+    private function buildQueryWithSubQueries($query, $queries){
+        foreach($queries as $position => $queryInArray){
+            $query .= $position === 0 ? " WHERE $queryInArray" : " AND $queryInArray";
+        }
+        return $query;
     }
 
 //    /**

@@ -21,15 +21,11 @@ class TaskType
     #[ORM\Column(length: 255)]
     private ?string $state = null;
 
-    #[ORM\OneToMany(mappedBy: 'taskType', targetEntity: Task::class)]
-    private Collection $tasks;
-
     #[ORM\OneToMany(mappedBy: 'taskType', targetEntity: SummaryDataTask::class)]
     private Collection $summaryDataTasks;
 
     public function __construct()
     {
-        $this->tasks = new ArrayCollection();
         $this->summaryDataTasks = new ArrayCollection();
     }
 
@@ -58,36 +54,6 @@ class TaskType
     public function setState(string $state): self
     {
         $this->state = $state;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Task>
-     */
-    public function getTasks(): Collection
-    {
-        return $this->tasks;
-    }
-
-    public function addTask(Task $task): self
-    {
-        if (!$this->tasks->contains($task)) {
-            $this->tasks->add($task);
-            $task->setTaskType($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTask(Task $task): self
-    {
-        if ($this->tasks->removeElement($task)) {
-            // set the owning side to null (unless already changed)
-            if ($task->getTaskType() === $this) {
-                $task->setTaskType(null);
-            }
-        }
 
         return $this;
     }

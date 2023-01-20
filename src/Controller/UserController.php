@@ -11,30 +11,31 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route("/user")]
 class UserController extends GlobalConfigManager
 {
 
     #[Route('/login', name: 'login')]
-    public function login(HandlerUserHandler $userHandler): JsonResponse
+    public function login(HandlerUserHandler $handler): JsonResponse
     {
         $user = $this->getUser();
         $token = $this->generateToken();
         
         $user->setApiToken($token);
-        $this->repository($userHandler::USER_ENTITY_NAME)->save($user, true);
+        $this->repository($handler::ENTITY_NAME)->save($user, true);
         return $this->customResponse($token);
     }
 
-    #[Route('/user/create', methods: ['POST'])]
-    public function userCreate(UserRequest $userRequest, HandlerUserHandler $userHandler, UserPasswordHasherInterface $passwordHasher): JsonResponse
+    #[Route('/create', methods: ["POST"])]
+    public function userCreate(UserRequest $validator, HandlerUserHandler $handler, UserPasswordHasherInterface $passwordHasher): JsonResponse
     {
         try{
-            $params = GlobalRequest::getRequest()->toArray();
-            $user   = $userHandler->set($params, $passwordHasher);
-            $result = $userHandler->beforeSave($user);
+            $params   = GlobalRequest::getRequest();
+            $user     = $handler->set($params, $passwordHasher);
+            $response = $handler->beforeSave($user);
         }catch(\Exception $e){
             return $this->customResponse(null, $e->getMessage());
         }
-        return $result;
+        return $this->customResponse($response);
     }
 }
