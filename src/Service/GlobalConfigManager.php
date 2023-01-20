@@ -4,15 +4,14 @@ namespace App\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
 class GlobalConfigManager extends AbstractController{
 
-    private $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager){
-        $this->entityManager = $entityManager;
+    public function __construct(protected EntityManagerInterface $entityManager){
     }
 
     public function repository($entityName){
@@ -28,18 +27,22 @@ class GlobalConfigManager extends AbstractController{
     public function customResponse($result, $error = null){
         return $this->json(
             array(
-                "result" => $result,
+                "result" => json_decode($this->generateSerializer($result, "json")),
                 "error"  => $error
             )
         );
     }
 
-    // public function convertAnyObjectToArray($object){
-    //     $normalizer = [new ObjectNormalizer()];
-    //     $serializer = new Serializer([$normalizer]);
+    private function generateSerializer($result, $format){
+        $encoders = [new JsonEncoder()];
+        $normalizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normalizers, $encoders);
 
-    //     $normalizedUser = $serializer->normalize($object);
-    //     dd($normalizedUser);
-    // }
+        return $serializer->serialize($result, $format, [
+            'circular_reference_handler' => function ($object) {
+                return $object->getId();
+            }
+        ]);
+    }
 
 }

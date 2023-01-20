@@ -8,7 +8,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserHandler extends GlobalConfigManager{
 
-    const USER_ENTITY_NAME = "User";
+    const ENTITY_NAME = "User";
 
     public function set($params, UserPasswordHasherInterface $passwordHasher){
         $email = $params["email"];
@@ -16,20 +16,18 @@ class UserHandler extends GlobalConfigManager{
 
         $user = new User();
         $user->setEmail($email);
-        $user->setPassword($passwordHasher->hashPassword(
-            $user,
-            $psw
-        ));
+        $user->setPassword($passwordHasher->hashPassword($user,$psw));
         return $user;
     }
 
     public function beforeSave(User $user){
-        $repository = $this->repository(self::USER_ENTITY_NAME);
-        $email = $user->getEmail();
+        $repository = $this->repository(self::ENTITY_NAME);
+        $email      = $user->getEmail();
+
         if(empty($repository->findBy(array("email" => $email)))){
             try{
-                $this->repository(self::USER_ENTITY_NAME)->save($user, true);
-                return $this->customResponse($user);
+                $repository->save($user, true);
+                return $user;
             }catch(\Exception $e){
                 throw new \Exception($e->getMessage());
             }

@@ -48,8 +48,9 @@ class Task
         return $this->creationDate;
     }
 
-    public function setCreationDate(\DateTimeInterface $creationDate): self
+    public function setCreationDate(): self
     {
+        $creationDate = new \DateTime();
         $this->creationDate = $creationDate;
 
         return $this;
