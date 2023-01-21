@@ -15,11 +15,11 @@ class TaskTypeController extends GlobalConfigManager
 {
 
     #[Route("/get", methods: ["POST"])]
-    public function get(TaskTypeGetRequest $validator, TaskTypeHandler $handler): Response
+    public function get(TaskTypeHandler $handler, TaskTypeGetRequest $automatizedValidator): Response
     {
-        $params = GlobalRequest::getRequest();
         try{
-            $result = $handler->get($params);
+            $request = GlobalRequest::getRequest();
+            $result  = $handler->get($request);
         }catch(\Exception $e){
             return $this->customResponse(null, $e->getMessage());
         }

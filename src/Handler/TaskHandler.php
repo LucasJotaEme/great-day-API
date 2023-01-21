@@ -66,9 +66,7 @@ class TaskHandler extends GlobalConfigManager{
     private function ifExistsGetTaskById($taskId){
         $task = $this->repository(self::ENTITY_NAME)->find($taskId);
 
-        if(null === $task){
-            throw new \Exception("Task with id $taskId not found");
-        }
+        null === $task ?? throw new \Exception("Task with id $taskId not found");
         return $task;
     }
 
@@ -78,11 +76,9 @@ class TaskHandler extends GlobalConfigManager{
     }
 
     private function validateUserEntity($userId){
-        $userRepository     = $this->repository(UserHandler::ENTITY_NAME);
+        $user = $this->repository(UserHandler::ENTITY_NAME)->find($userId);
 
-        if(null === $userRepository->find($userId)){
-            throw new \Exception("User with id $userId not found");
-        }
+        null === $user ?? throw new \Exception("User with id $userId not found");
     }
 
     private function validateTaskTypeEntity($taskTypeId){
@@ -94,8 +90,7 @@ class TaskHandler extends GlobalConfigManager{
     }
 
     private function validateTaskNameInRepository(Task $task){
-        $repository   = $this->repository(self::ENTITY_NAME);
-        $existingTask = $repository->findBy(array("name" => $task->getName()));
+        $existingTask = $this->repository(self::ENTITY_NAME)->findBy(array("name" => $task->getName()));
 
         if(!empty($existingTask) && $existingTask[0]->getId() != $task->getId()){
             throw new \Exception("{$task->getName()} task already exists");

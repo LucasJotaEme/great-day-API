@@ -18,7 +18,7 @@ class UserController extends GlobalConfigManager
     #[Route('/login', name: 'login')]
     public function login(HandlerUserHandler $handler): JsonResponse
     {
-        $user = $this->getUser();
+        $user  = $this->getUser();
         $token = $this->generateToken();
         
         $user->setApiToken($token);
@@ -27,11 +27,11 @@ class UserController extends GlobalConfigManager
     }
 
     #[Route('/create', methods: ["POST"])]
-    public function userCreate(UserRequest $validator, HandlerUserHandler $handler, UserPasswordHasherInterface $passwordHasher): JsonResponse
+    public function userCreate(HandlerUserHandler $handler, UserPasswordHasherInterface $passwordHasher, UserRequest $automatizedValidator): JsonResponse
     {
         try{
-            $params   = GlobalRequest::getRequest();
-            $user     = $handler->set($params, $passwordHasher);
+            $request  = GlobalRequest::getRequest();
+            $user     = $handler->set($request, $passwordHasher);
             $response = $handler->beforeSave($user);
         }catch(\Exception $e){
             return $this->customResponse(null, $e->getMessage());

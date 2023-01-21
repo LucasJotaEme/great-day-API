@@ -17,12 +17,11 @@ class TaskController extends GlobalConfigManager
 {
 
     #[Route("/create", methods: ["POST"])]
-    public function create(TaskCreateRequest $validator, TaskHandler $handler): Response
+    public function create(TaskHandler $handler, TaskCreateRequest $automatizedValidator): Response
     {
-        $params = GlobalRequest::getRequest();
         try{
-            $task   = $handler->set($params);
-            $result = $handler->beforeSave($task);
+            $request = GlobalRequest::getRequest();
+            $result  = ($task = $handler->set($request)) && $handler->beforeSave($task);
         }catch(\Exception $e){
             return $this->customResponse(null, $e->getMessage());
         }
@@ -30,12 +29,11 @@ class TaskController extends GlobalConfigManager
     }
 
     #[Route("/edit", methods: ["POST"])]
-    public function edit(TaskEditRequest $validator, TaskHandler $handler): Response
+    public function edit(TaskHandler $handler, TaskEditRequest $automatizedValidator): Response
     {
-        $params = GlobalRequest::getRequest();
         try{
-            $task   = $handler->set($params, true);
-            $result = $handler->beforeSave($task);
+            $request = GlobalRequest::getRequest();
+            $result  = ($task = $handler->set($request)) && $handler->beforeSave($task);
         }catch(\Exception $e){
             return $this->customResponse(null, $e->getMessage());
         }
@@ -43,11 +41,11 @@ class TaskController extends GlobalConfigManager
     }
 
     #[Route("/remove", methods: ["POST"])]
-    public function remove(TaskIdRequest $validator, TaskHandler $handler): Response
+    public function remove(TaskHandler $handler, TaskIdRequest $automatizedValidator): Response
     {
-        $params = GlobalRequest::getRequest();
         try{
-            $result = $handler->remove($params);
+            $request = GlobalRequest::getRequest();
+            $result  = $handler->remove($request);
         }catch(\Exception $e){
             return $this->customResponse(null, $e->getMessage());
         }
@@ -55,11 +53,11 @@ class TaskController extends GlobalConfigManager
     }
 
     #[Route("/get", methods: ["POST"])]
-    public function get(TaskIdRequest $validator, TaskHandler $handler): Response
+    public function get(TaskHandler $handler, TaskIdRequest $automatizedValidator): Response
     {
-        $params = GlobalRequest::getRequest();
         try{
-            $result = $handler->get($params);
+            $request = GlobalRequest::getRequest();
+            $result  = $handler->get($request);
         }catch(\Exception $e){
             return $this->customResponse(null, $e->getMessage());
         }
@@ -67,11 +65,11 @@ class TaskController extends GlobalConfigManager
     }
 
     #[Route("/search", methods: ["POST"])]
-    public function search(TaskSearchRequest $validator, TaskHandler $handler): Response
+    public function search(TaskHandler $handler, TaskSearchRequest $automatizedValidator): Response
     {
-        $params = GlobalRequest::getRequest();
         try{
-            $result = $handler->search($params);
+            $request = GlobalRequest::getRequest();
+            $result  = $handler->search($request);
         }catch(\Exception $e){
             return $this->customResponse(null, $e->getMessage());
         }

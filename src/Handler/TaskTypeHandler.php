@@ -19,9 +19,7 @@ class TaskTypeHandler extends GlobalConfigManager{
     private function ifExistsGetTaskTypeById($taskTypeId){
         $taskType = $this->repository(self::ENTITY_NAME)->find($taskTypeId);
 
-        if(null === $taskType){
-            throw new \Exception("Task with id $taskTypeId not found");
-        }
+        null === $taskType ?? throw new \Exception("Task with id $taskTypeId not found");
         return $taskType;
     }
 }
