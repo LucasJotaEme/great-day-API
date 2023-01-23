@@ -10,16 +10,16 @@ class WorkerUserEditRequest extends GlobalRequest{
     #[NotBlank(), Type("integer")]
     protected $workerUserId;
 
-    #[Type(["integer","float"])]
+    #[NotBlank(), Type(["integer","float"])]
     protected $workingMinutes;
 
-    #[Type(["integer","float"])]
+    #[NotBlank(), Type(["integer","float"])]
     protected $restMinutes;
 
-    #[Type(["integer","float"])]
+    #[NotBlank(), Type(["integer","float"])]
     protected $totalWorkingHours;
 
-    #[Type("integer")]
+    #[NotBlank(), Type("integer")]
     protected $userId;
     
 }
