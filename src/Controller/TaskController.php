@@ -21,7 +21,8 @@ class TaskController extends GlobalConfigManager
     {
         try{
             $request = GlobalRequest::getRequest();
-            $result  = ($task = $handler->set($request)) && $handler->beforeSave($task);
+            $task    = $handler->set($request);
+            $result  = $handler->beforeSave($task);
         }catch(\Exception $e){
             return $this->customResponse(null, $e->getMessage());
         }
@@ -33,7 +34,8 @@ class TaskController extends GlobalConfigManager
     {
         try{
             $request = GlobalRequest::getRequest();
-            $result  = ($task = $handler->set($request)) && $handler->beforeSave($task);
+            $task = $handler->set($request, true);
+            $result  = $handler->beforeSave($task);
         }catch(\Exception $e){
             return $this->customResponse(null, $e->getMessage());
         }

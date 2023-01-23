@@ -65,8 +65,8 @@ class TaskHandler extends GlobalConfigManager{
 
     private function ifExistsGetTaskById($taskId){
         $task = $this->repository(self::ENTITY_NAME)->find($taskId);
-
-        null === $task ?? throw new \Exception("Task with id $taskId not found");
+        if(null === $task)
+            throw new \Exception("Task with id $taskId not found");
         return $task;
     }
 
@@ -78,7 +78,8 @@ class TaskHandler extends GlobalConfigManager{
     private function validateUserEntity($userId){
         $user = $this->repository(UserHandler::ENTITY_NAME)->find($userId);
 
-        null === $user ?? throw new \Exception("User with id $userId not found");
+        if(null === $user)
+            throw new \Exception("User with id $userId not found");
     }
 
     private function validateTaskTypeEntity($taskTypeId){
