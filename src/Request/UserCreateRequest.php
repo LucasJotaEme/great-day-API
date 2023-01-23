@@ -8,10 +8,13 @@ use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\Password;
 
-class UserRequest extends GlobalRequest{
+class UserCreateRequest extends GlobalRequest{
 
     #[NotBlank(), Email()]
     protected $email;
+
+    #[NotBlank(), Type("string")]
+    protected $userName;
 
     #[NotBlank(), Length(
         min: 5, minMessage: 'Password is too short',

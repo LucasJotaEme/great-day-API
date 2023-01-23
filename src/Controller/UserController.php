@@ -2,11 +2,12 @@
 
 namespace App\Controller;
 
-use App\Handler\UserHandler as HandlerUserHandler;
+use App\Handler\UserHandler;
 use App\Request\GlobalRequest;
-use App\Request\UserRequest;
+use App\Request\UserCreateRequest;
+use App\Request\UserEditRequest;
+use App\Request\UserIdRequest;
 use App\Service\GlobalConfigManager;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,7 +17,7 @@ class UserController extends GlobalConfigManager
 {
 
     #[Route('/login', name: 'login')]
-    public function login(HandlerUserHandler $handler): JsonResponse
+    public function login(UserHandler $handler): JsonResponse
     {
         $user  = $this->getUser();
         $token = $this->generateToken();
@@ -27,7 +28,7 @@ class UserController extends GlobalConfigManager
     }
 
     #[Route('/create', methods: ["POST"])]
-    public function userCreate(HandlerUserHandler $handler, UserPasswordHasherInterface $passwordHasher, UserRequest $automatizedValidator): JsonResponse
+    public function userCreate(UserHandler $handler, UserPasswordHasherInterface $passwordHasher, UserCreateRequest $automatizedValidator): JsonResponse
     {
         try{
             $request  = GlobalRequest::getRequest();
@@ -37,5 +38,42 @@ class UserController extends GlobalConfigManager
             return $this->customResponse(null, $e->getMessage());
         }
         return $this->customResponse($response);
+    }
+
+    #[Route('/edit', methods: ["POST"])]
+    public function editCreate(UserHandler $handler, UserPasswordHasherInterface $passwordHasher, UserEditRequest $automatizedValidator): JsonResponse
+    {
+        try{
+            $request  = GlobalRequest::getRequest();
+            $user     = $handler->set($request, $passwordHasher, true);
+            $response = $handler->beforeSave($user);
+        }catch(\Exception $e){
+            return $this->customResponse(null, $e->getMessage());
+        }
+        return $this->customResponse($response);
+    }
+
+    #[Route("/remove", methods: ["POST"])]
+    public function remove(UserHandler $handler, UserIdRequest $automatizedValidator): JsonResponse
+    {
+        try{
+            $request = GlobalRequest::getRequest();
+            $result  = $handler->remove($request);
+        }catch(\Exception $e){
+            return $this->customResponse(null, $e->getMessage());
+        }
+        return $this->customResponse($result);
+    }
+
+    #[Route("/get", methods: ["POST"])]
+    public function get(UserHandler $handler, UserIdRequest $automatizedValidator): JsonResponse
+    {
+        try{
+            $request = GlobalRequest::getRequest();
+            $result  = $handler->get($request);
+        }catch(\Exception $e){
+            return $this->customResponse(null, $e->getMessage());
+        }
+        return $this->customResponse($result);
     }
 }
