@@ -10,7 +10,7 @@ class TaskEditRequest extends GlobalRequest{
     #[NotBlank(), Type("integer")]
     protected $taskId;
     
-    #[Type("string")]
+    #[NotBlank(), Type("string")]
     protected $name;
 
     #[Type("integer")]

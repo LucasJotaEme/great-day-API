@@ -91,9 +91,9 @@ class TaskHandler extends GlobalConfigManager{
     }
 
     private function validateTaskNameInRepository(Task $task){
-        $existingTask = $this->repository(self::ENTITY_NAME)->findBy(array("name" => $task->getName()));
+        $existingTask = $this->repository(self::ENTITY_NAME)->findOneBy(array("name" => $task->getName()));
 
-        if(!empty($existingTask) && $existingTask[0]->getId() != $task->getId()){
+        if(null !== $existingTask && $existingTask->getId() != $task->getId()){
             throw new \Exception("{$task->getName()} task already exists");
         }
     }

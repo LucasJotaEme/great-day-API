@@ -11,10 +11,10 @@ class SummaryEditRequest extends GlobalRequest{
     #[NotBlank(), Type("integer"), Length(10)]
     protected $creationDate;
 
-    #[Type(["integer", "float"])]
+    #[NotBlank(), Type(["integer", "float"])]
     protected $hoursWorked;
 
-    #[Type(["integer","float"])]
+    #[NotBlank(), Type(["integer","float"])]
     protected $totalWorkingHours;
 
     #[NotBlank(), Type("integer")]
