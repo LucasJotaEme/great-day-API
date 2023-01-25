@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Entity\Task;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\Validator\Constraints\Length;
 
 /**
  * @extends ServiceEntityRepository<Task>
@@ -17,7 +16,7 @@ use Symfony\Component\Validator\Constraints\Length;
  */
 class TaskRepository extends ServiceEntityRepository
 {
-    CONST ENTITY_ROUTE        = "App\Entity\Task";
+    CONST ENTITY_ROUTE = "App\Entity\Task";
 
     public function __construct(ManagerRegistry $registry)
     {

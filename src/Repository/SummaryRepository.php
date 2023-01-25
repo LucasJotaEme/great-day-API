@@ -16,6 +16,9 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class SummaryRepository extends ServiceEntityRepository
 {
+
+    CONST ENTITY_ROUTE = "App\Entity\Summary";
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Summary::class);
@@ -37,6 +40,34 @@ class SummaryRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function findByParamsWithQuery($params): Array
+    {
+        $entityRoute         = self::ENTITY_ROUTE;
+        $entityManager       = $this->getEntityManager();
+        $queryParams         = array();
+        $queries             = array();
+        if(isset($params["firstDate"])){
+            $queries[] = "(summary.creationDate >= :firstDate AND summary.creationDate <= :secondDate)";
+            $queryParams["firstDate"]  = $params["firstDate"]->format('Y-m-d H:i:s');
+            $queryParams["secondDate"] = $params["secondDate"]->format('Y-m-d H:i:s');
+        }
+        if(isset($params["userId"])){
+            $queries[] = "(summary.user = :userId)";
+            $queryParams["userId"] = $params["userId"];
+        }
+        return $entityManager
+        ->createQuery($this->buildQueryWithSubQueries("SELECT summary FROM $entityRoute summary",$queries))
+        ->setParameters($queryParams)
+        ->getResult();
+    }
+
+    private function buildQueryWithSubQueries($query, $queries){
+        foreach($queries as $position => $queryInArray){
+            $query .= $position === 0 ? " WHERE $queryInArray" : " AND $queryInArray";
+        }
+        return $query;
     }
 
 //    /**

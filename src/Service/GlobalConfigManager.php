@@ -33,6 +33,10 @@ class GlobalConfigManager extends AbstractController{
         );
     }
 
+    public function convertTimestampToDateTime($timestamp){
+        return \DateTime::createFromFormat('U', $timestamp);
+    }
+
     private function generateSerializer($result, $format){
         $encoders = [new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];
